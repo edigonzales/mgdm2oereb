@@ -1,0 +1,3 @@
+rootProject.name = 'mgdm2oereb'
+include('lib')
+include('app')
