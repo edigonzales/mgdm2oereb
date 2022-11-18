@@ -1,3 +1,7 @@
+
+lib/src/test/data/*.xsl
+lib/src/test/data/OeREBKRMtrsfr*
+
 .fleet
 lib/bin
 lib/build

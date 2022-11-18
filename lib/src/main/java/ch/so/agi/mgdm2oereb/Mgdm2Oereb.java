@@ -16,8 +16,6 @@ public class Mgdm2Oereb {
         var xslFileName = settings.getValue(Mgdm2Oereb.MODEL) + ".trafo.xsl";
         var xslFile = Paths.get(outputDirectory.getAbsolutePath(), xslFileName).toFile();
         Util.loadFile(xslFileName, xslFile);
-                
-        log.info("fubar*****");
         
 //        var resultXtfFile = Paths.get(outDirectory, "result.html").toFile();
 //        
