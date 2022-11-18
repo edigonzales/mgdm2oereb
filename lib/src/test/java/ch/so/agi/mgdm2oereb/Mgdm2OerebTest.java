@@ -3,9 +3,11 @@ package ch.so.agi.mgdm2oereb;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+
 class Mgdm2OerebTest {
     @Test 
-    void convertPlanungszonen() {
+    void convertPlanungszonen() throws IOException {
         Settings settings = new Settings();
         settings.setValue(Mgdm2Oereb.MODEL, "Planungszonen_V1_1");
         settings.setValue(Mgdm2Oereb.THEME_CODE, "ch.Planungszonen");
