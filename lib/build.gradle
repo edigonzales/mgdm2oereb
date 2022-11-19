@@ -24,6 +24,22 @@ configurations {
 }
 */
 
+/*
+sourceSets {
+    main {
+        resources {
+            srcDirs  "../venv/"
+        }
+    }
+}
+*/
+
+// TODO beim Verpacken in das Jar alles wieder excludieren resp. nur xsl und catalogs inkludieren.
+// Sonst mit copy task den ganzen venv-Ordner reinkopieren.
+
+//sourceSets.main.resources.srcDirs += [ "../venv" ]
+//sourceSets.main.resources.excludes = [ "bin" ]
+
 configurations {
     all*.exclude group: 'xml-apis'
 }
@@ -32,6 +48,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.36'
     implementation 'net.sf.saxon:Saxon-HE:11.4' 
     implementation 'ch.interlis:ilivalidator:1.12.1'
+    compileOnly 'org.graalvm.sdk:graal-sdk:22.3.0'    
     
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     testImplementation 'org.slf4j:slf4j-simple:1.7.3'
@@ -41,5 +58,37 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.register('enforceGraalPython') {
+    doLast {
+        if (!file("$System.env.JAVA_HOME/bin/graalpy").exists()) {
+            throw new GradleException("You must set JAVA_HOME to a GraalVM with Python installed.")
+        }
+    }
+}
+
+tasks.register('prepareEnv') {
+    doLast {
+    /*
+        exec {
+            workingDir "${project.rootDir}"
+            commandLine "$System.env.JAVA_HOME/bin/graalpy", "-m", "venv", "venv"
+        }
+        */
+        exec {
+            workingDir "${project.rootDir}"
+            commandLine 'venv/bin/pip', 'install', 'requests', 'lxml'
+        }
+    }
+}
+
+tasks.register('copyVenv', Copy) {
+    from ('..') {
+        include 'venv/**'
+    }
+    into 'build/resources/main'
+}
 
 
+prepareEnv.dependsOn(enforceGraalPython)
+compileJava.dependsOn(prepareEnv)
+classes.dependsOn(copyVenv)

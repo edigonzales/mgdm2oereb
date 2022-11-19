@@ -2,6 +2,7 @@ package ch.so.agi.mgdm2oereb;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -23,8 +24,46 @@ import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Source;
+import org.graalvm.polyglot.Value;
+
 public class Mgdm2Oereb {
     //static Logger log = LoggerFactory.getLogger(Mgdm2Oereb.class);
+    
+    private static final String PYTHON = "python";
+
+    private static final String SOURCE_FILE_NAME = "xsl/oereblex.download.dummy.py";
+    
+    public void convertWithPy() throws IOException {
+        //TODO if/else (dev vs prod(jar))
+        var venvExePath = Mgdm2Oereb.class.getClassLoader()
+                .getResource(Paths.get("venv", "bin", "graalpy").toString())
+                .getPath();
+        
+        var code = new InputStreamReader(Mgdm2Oereb.class.getClassLoader().getResourceAsStream(SOURCE_FILE_NAME));
+
+        try (var context = Context.newBuilder("python")
+                .allowAllAccess(true)
+                .option("python.Executable", venvExePath)
+                .option("python.ForceImportSite", "true")
+                .build()) {
+            
+            System.out.println("Hallo GraalVM");
+            context.eval(Source.newBuilder(PYTHON, code, SOURCE_FILE_NAME).build());
+
+
+            Value pyOereblexDownloaderClass = context.getPolyglotBindings().getMember("OereblexDownloader");
+            Value pyOereblexDownloader = pyOereblexDownloaderClass.newInstance();
+
+            OereblexDownloader oereblexDownloader = pyOereblexDownloader.as(OereblexDownloader.class);
+            oereblexDownloader.download();
+
+        }
+
+    } 
+    
+    
 
     public boolean convert(String inputXtfFileName, String outputDirectory, Settings settings) throws Mgdm2OerebException {        
         var outDirectory = new File(outputDirectory);

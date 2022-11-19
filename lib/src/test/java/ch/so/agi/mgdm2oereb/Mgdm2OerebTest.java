@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class Mgdm2OerebTest {
     @Test 
-    void convertWithoutOereblex(@TempDir Path tempDir) throws Mgdm2OerebException {
+    public void convertWithoutOereblex(@TempDir Path tempDir) throws Mgdm2OerebException {
         var settings = new Settings();
         settings.setValue(Mgdm2Oereb.MODEL, "Planungszonen_V1_1");
         settings.setValue(Mgdm2Oereb.THEME_CODE, "ch.Planungszonen");
@@ -32,4 +32,11 @@ class Mgdm2OerebTest {
         boolean valid = Validator.runValidation(outputFileName.getAbsolutePath(), iliSettings);
         assertTrue(valid);
     }
+    
+    @Test 
+    public void convertWithOereblex() throws IOException {
+        Mgdm2Oereb mgdm2oereb = new Mgdm2Oereb();
+        mgdm2oereb.convertWithPy();
+    }
+    
 }
