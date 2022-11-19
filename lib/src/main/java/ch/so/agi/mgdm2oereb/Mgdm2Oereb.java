@@ -4,52 +4,76 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.transform.stream.StreamSource;
+
+import org.interlis2.validator.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.s9api.XsltCompiler;
+import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.s9api.XsltTransformer;
+
 public class Mgdm2Oereb {
-    static Logger log = LoggerFactory.getLogger(Mgdm2Oereb.class);
+    //static Logger log = LoggerFactory.getLogger(Mgdm2Oereb.class);
 
-    public void convert(String xtfFileName, Settings settings) throws IOException {        
-        var outputDirectory = new File(xtfFileName).getParentFile();
+    public boolean convert(String inputXtfFileName, String outputDirectory, Settings settings) throws Mgdm2OerebException {        
+        var outDirectory = new File(outputDirectory);
         
-        var xslFileName = settings.getValue(Mgdm2Oereb.MODEL) + ".trafo.xsl";
-        var xslFile = Paths.get(outputDirectory.getAbsolutePath(), xslFileName).toFile();
-        Util.loadFile(xslFileName, xslFile);
-        
-//        var resultXtfFile = Paths.get(outDirectory, "result.html").toFile();
-//        
-//        String XML2PDF_XSL = "xml2html.xsl";
-//        File xsltFile = new File(Paths.get(outDirectory, XML2PDF_XSL).toFile().getAbsolutePath());
-//        InputStream xsltFileInputStream = Validator.class.getResourceAsStream("/"+XML2PDF_XSL); 
-//        Files.copy(xsltFileInputStream, xsltFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-//        xsltFileInputStream.close();
-//
-//        Processor proc = new Processor(false);
-//        XsltCompiler comp = proc.newXsltCompiler();
-//        XsltExecutable exp = comp.compile(new StreamSource(xsltFile));
-//        
-//        XdmNode source = proc.newDocumentBuilder().build(new StreamSource(resultXmlFile));
-//        Serializer outHtml = proc.newSerializer(resultXtfFile);
-//        XsltTransformer trans = exp.load();
-//        trans.setInitialContextNode(source);
-//        trans.setDestination(outHtml);
-//        trans.transform();
-//        trans.close();
+        try {
+            var xslFileName = settings.getValue(Mgdm2Oereb.MODEL) + ".trafo.xsl";
+            var xslFile = Paths.get(outDirectory.getAbsolutePath(), xslFileName).toFile();
+            Util.loadFile("xsl/"+xslFileName, xslFile);
+            
+            var outputXtfFile = Paths.get(outDirectory.getAbsolutePath(), "OeREBKRMtrsfr_V2_0.xtf").toFile();
 
-        
-        
+            var catalogFileName = settings.getValue(Mgdm2Oereb.CATALOG);
+            var catalogFile = Paths.get(outDirectory.getAbsolutePath(), catalogFileName).toFile();
+            Util.loadFile("catalogs/"+catalogFileName, catalogFile);
+            
+            Processor proc = new Processor(false);
+            XsltCompiler comp = proc.newXsltCompiler();
+            XsltExecutable exp = comp.compile(new StreamSource(xslFile));
+            
+            XdmNode source = proc.newDocumentBuilder().build(new StreamSource(new File(inputXtfFileName)));
+            Serializer outXtf = proc.newSerializer(outputXtfFile);
+            XsltTransformer trans = exp.load();
+            trans.setInitialContextNode(source);
+            trans.setDestination(outXtf);
+            trans.setParameter(new QName("theme_code"), (XdmValue) XdmAtomicValue.makeAtomicValue(settings.getValue(Mgdm2Oereb.THEME_CODE)));
+            trans.setParameter(new QName("model"), (XdmValue) XdmAtomicValue.makeAtomicValue(settings.getValue(Mgdm2Oereb.MODEL)));        
+            trans.setParameter(new QName("catalog"), (XdmValue) XdmAtomicValue.makeAtomicValue(catalogFile.getAbsolutePath()));
+            trans.transform();
+            trans.close();
+            
+            boolean validate = Boolean.parseBoolean(settings.getValue(Mgdm2Oereb.VALIDATE));
+            
+            if (validate) {
+                var iliSettings = new ch.ehi.basics.settings.Settings();
+                boolean valid = Validator.runValidation(outputXtfFile.getAbsolutePath(), iliSettings);
+                return valid;
+            }
+            
+        } catch (IOException | SaxonApiException e) {
+            throw new Mgdm2OerebException(e.getMessage());
+        }
+        return true;
     }
-    
-    
-    
+
     public static final String MODEL = "MODEL"; 
     
     public static final String THEME_CODE = "THEME_CODE";
     
     public static final String OEREBLEX_HOST = "OEREBLEX_HOST";
-    
-    //public static final String XTF_FILE = "XTF_FILE";
      
     public static final String CATALOG = "CATALOG";
    
@@ -58,5 +82,7 @@ public class Mgdm2Oereb {
     public static final String DUMMY_OFFICE_NAME = "DUMMY_OFFICE_NAME";
     
     public static final String DUMMY_OFFICE_URL = "DUMMY_OFFICE_URL";
+    
+    public static final String VALIDATE = "VALIDATE";
 
 }

@@ -1,6 +1,10 @@
 plugins {
     id 'application'
+    id 'org.graalvm.buildtools.native' version '0.9.17'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
+
+apply from: "$rootDir/gradle/versioning.gradle"
 
 sourceCompatibility = '17'
 targetCompatibility = '17'
@@ -9,15 +13,27 @@ compileJava {
     options.compilerArgs.addAll(['--release', '17'])
 }
 
+def myArtifactId = "mgdm2oereb"
+def os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem; 
+
 repositories {
     mavenCentral()
+    maven { url 'https://jars.interlis.ch/' }
+}
+
+configurations {
+    jar.archiveName = myArtifactId+"-"+version+".jar"
 }
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
 
-    implementation 'com.google.guava:guava:30.1.1-jre'
     implementation project(':lib')
+    
+    implementation 'org.slf4j:slf4j-simple:1.7.36'
+    implementation 'info.picocli:picocli:4.6.3'
+    implementation 'info.picocli:picocli-codegen:4.6.3'
+    annotationProcessor 'info.picocli:picocli-codegen:4.6.3'
 }
 
 tasks.named('test') {
@@ -29,5 +45,52 @@ application {
 }
 
 run {
-    args = ["--foo", "bar"]
+    //args = ["--foo", "bar"]
+    //args = ["--server", "--directory=/Users/stefan/tmp/ili2repo/models/", "--init"]
+    //args = ["--help"]
+    args = ["--input=../lib/src/test/data/ch.Planungszonen.sh.mgdm.v1_1.xtf", "--outputDirectory=/Users/stefan/tmp/mgdm2oereb/",
+    "--model=Planungszonen_V1_1", "--themeCode=ch.Planungszonen", "--catalog=ch.sh.OeREBKRMkvs_supplement.xml", "--validate"]
 }
+
+graalvmNative {
+    binaries {
+        main {
+            imageName = 'mgdm2oereb'
+            mainClass = 'ch.so.agi.mgdm2oereb.App' 
+            debug = false 
+            verbose = true 
+            fallback = false 
+            configurationFileDirectories.from(file('src/main/resources/META-INF/native-image/')) 
+
+            buildArgs.add('--enable-url-protocols=http,https')                        
+        }
+        test {
+            verbose = true
+            fallback = false 
+            buildArgs.add('--enable-url-protocols=http,https') 
+        }
+    }
+}
+
+startScripts {
+   applicationName = myArtifactId
+}
+
+distZip {
+    archiveBaseName = myArtifactId
+}
+
+distTar {
+    compression = Compression.GZIP
+    archiveExtension = "tar.gz"
+    archiveBaseName = myArtifactId
+}
+
+distributions {
+    nativeImage {
+        contents {
+            from 'build/native/nativeCompile/'
+        }
+    }
+}
+
