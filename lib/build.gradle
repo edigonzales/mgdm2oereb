@@ -68,12 +68,10 @@ tasks.register('enforceGraalPython') {
 
 tasks.register('prepareEnv') {
     doLast {
-    /*
         exec {
             workingDir "${project.rootDir}"
             commandLine "$System.env.JAVA_HOME/bin/graalpy", "-m", "venv", "venv"
         }
-        */
         exec {
             workingDir "${project.rootDir}"
             commandLine 'venv/bin/pip', 'install', 'requests', 'lxml'
