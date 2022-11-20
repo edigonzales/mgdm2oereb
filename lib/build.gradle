@@ -77,7 +77,7 @@ tasks.register('prepareEnv') {
         }
         exec {
             workingDir "${project.rootDir}"
-            commandLine 'venv/bin/pip', 'install', 'requests', 'lxml'
+            commandLine 'venv/bin/pip', 'install', 'lxml'
         }
     }
 }
