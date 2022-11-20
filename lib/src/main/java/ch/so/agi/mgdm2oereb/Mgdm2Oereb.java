@@ -2,8 +2,12 @@ package ch.so.agi.mgdm2oereb;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -35,53 +39,117 @@ public class Mgdm2Oereb {
 
     private static final String SOURCE_FILE_NAME = "xsl/oereblex.download.py";
     
-    public void convertWithPy(String inputXtfFileName, String outputDirectory, Settings settings) throws Mgdm2OerebException {
+    public boolean convertWithPy(String inputXtfFileName, String outputDirectory, Settings settings) throws Mgdm2OerebException {
         var outDirectory = new File(outputDirectory);
 
-        // Download Geolink and create xml file for processing in main xsl transformation. 
+        // Download Geolink and create xml file for processing in main xsl transformation.
+        String venvExePath;
         try {
             var geoLinkXslFileName = settings.getValue(Mgdm2Oereb.MODEL) + ".oereblex.geolink_list.xsl";
             var geoLinkXslFile = Paths.get(outDirectory.getAbsolutePath(), geoLinkXslFileName).toFile();
             Util.loadFile("xsl/"+geoLinkXslFileName, geoLinkXslFile);  
             
             settings.setValue(Mgdm2Oereb.GEOLINK_LIST_TRAFO_PATH, geoLinkXslFile.getAbsolutePath());
+
+            URL resourceUrl = Mgdm2Oereb.class.getClassLoader().getResource(Paths.get("venv", "bin", "graalpy").toString());
+            if (resourceUrl != null) {
+                venvExePath = resourceUrl.getPath();
+            } else {
+                String venvZipName = "venv.zip";
+                String venvParentPath = Files.createTempDirectory(Paths.get(System.getProperty("java.io.tmpdir")), "mgdm2oereb_").toFile().getAbsolutePath();
+                try (InputStream is = getClass().getResourceAsStream("/"+venvZipName)) {
+                    File file = Paths.get(venvParentPath, new File(venvZipName).getName()).toFile();
+                    Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    
+                    String zipFilePath = Paths.get(venvParentPath, venvZipName).toFile().getAbsolutePath();
+                    System.out.println("<zipFilePath> "+ zipFilePath);
+                    Zip.unzip(zipFilePath, new File(venvParentPath));
+                    System.out.println("<venvParentPath> " + venvParentPath);
+                    
+                    venvExePath = Paths.get(venvParentPath, "venv", "bin", "graalpy").toString();
+                }
+            }
         } catch (IOException e) {
             throw new Mgdm2OerebException(e.getMessage());
         }
-
+        System.out.println("<venvExePath> " + venvExePath);
+        
+        
+        // Python: Eigene Klasse?
         //TODO if/else (dev vs prod(jar))
-        var venvExePath = Mgdm2Oereb.class.getClassLoader()
-                .getResource(Paths.get("venv", "bin", "graalpy").toString())
-                .getPath();
+//        var venvExePath = Mgdm2Oereb.class.getClassLoader()
+//                .getResource(Paths.get("venv", "bin", "graalpy").toString())
+//                .getPath();
         
         var code = new InputStreamReader(Mgdm2Oereb.class.getClassLoader().getResourceAsStream(SOURCE_FILE_NAME));
 
+        String oereblexXmlFileName = null;
         try (var context = Context.newBuilder("python")
                 .allowAllAccess(true)
                 .option("python.Executable", venvExePath)
                 .option("python.ForceImportSite", "true")
                 .build()) {
             
-            System.out.println("Hallo GraalVM");
             context.eval(Source.newBuilder(PYTHON, code, SOURCE_FILE_NAME).build());
 
+//            Value pyOereblexDownloaderClass = context.getPolyglotBindings().getMember("OereblexDownloader");
+//            Value pyOereblexDownloader = pyOereblexDownloaderClass.newInstance();
+//
+//            OereblexDownloader oereblexDownloader = pyOereblexDownloader.as(OereblexDownloader.class);
+//            oereblexXmlFileName = oereblexDownloader.run(new File(inputXtfFileName).getAbsolutePath(), outDirectory.getAbsolutePath(), settings);
 
-            Value pyOereblexDownloaderClass = context.getPolyglotBindings().getMember("OereblexDownloader");
-            Value pyOereblexDownloader = pyOereblexDownloaderClass.newInstance();
-
-            OereblexDownloader oereblexDownloader = pyOereblexDownloader.as(OereblexDownloader.class);
-            oereblexDownloader.run(new File(inputXtfFileName).getAbsolutePath(), outDirectory.getAbsolutePath(), settings);
-
+            // Approach mit Interface funktioniert mit native-image nicht, da nicht klar ist, welches Klasse das Interface implementiert.
+            Value oereblexDownloaderFn = context.getBindings("python").getMember("process_oereblex");
+            Value oereblexDownloadResult = oereblexDownloaderFn.execute(new File(inputXtfFileName).getAbsolutePath(), outDirectory.getAbsolutePath(), settings);
+            oereblexXmlFileName = oereblexDownloadResult.asString();
+            
         } catch (IOException e) {
             throw new Mgdm2OerebException(e.getMessage());
         }
         
         // Main xsl transformation
+        try {
+            var xslFileName = settings.getValue(Mgdm2Oereb.MODEL) + ".oereblex.trafo.xsl";
+            var xslFile = Paths.get(outDirectory.getAbsolutePath(), xslFileName).toFile();
+            Util.loadFile("xsl/"+xslFileName, xslFile);
+            
+            var outputXtfFile = Paths.get(outDirectory.getAbsolutePath(), "OeREBKRMtrsfr_V2_0.xtf").toFile();
 
+            var catalogFileName = settings.getValue(Mgdm2Oereb.CATALOG);
+            var catalogFile = Paths.get(outDirectory.getAbsolutePath(), catalogFileName).toFile();
+            Util.loadFile("catalogs/"+catalogFileName, catalogFile);
+            
+            Processor proc = new Processor(false);
+            XsltCompiler comp = proc.newXsltCompiler();
+            XsltExecutable exp = comp.compile(new StreamSource(xslFile));
+            
+            XdmNode source = proc.newDocumentBuilder().build(new StreamSource(new File(inputXtfFileName)));
+            Serializer outXtf = proc.newSerializer(outputXtfFile);
+            XsltTransformer trans = exp.load();
+            trans.setInitialContextNode(source);
+            trans.setDestination(outXtf);
+            trans.setParameter(new QName("theme_code"), (XdmValue) XdmAtomicValue.makeAtomicValue(settings.getValue(Mgdm2Oereb.THEME_CODE)));
+            trans.setParameter(new QName("model"), (XdmValue) XdmAtomicValue.makeAtomicValue(settings.getValue(Mgdm2Oereb.MODEL)));        
+            trans.setParameter(new QName("catalog"), (XdmValue) XdmAtomicValue.makeAtomicValue(catalogFile.getAbsolutePath()));
+            trans.setParameter(new QName("oereblex_host"), (XdmValue) XdmAtomicValue.makeAtomicValue(settings.getValue(Mgdm2Oereb.OEREBLEX_HOST)));
+            trans.setParameter(new QName("oereblex_output"), (XdmValue) XdmAtomicValue.makeAtomicValue(oereblexXmlFileName));
+            trans.transform();
+            trans.close();
+            
+            boolean validate = Boolean.parseBoolean(settings.getValue(Mgdm2Oereb.VALIDATE));
+            
+            if (validate) {
+                var iliSettings = new ch.ehi.basics.settings.Settings();
+                boolean valid = Validator.runValidation(outputXtfFile.getAbsolutePath(), iliSettings);
+                return valid;
+            }
+            
+        } catch (IOException | SaxonApiException e) {
+            throw new Mgdm2OerebException(e.getMessage());
+        }
+        return true;
     } 
     
-    
-
     public boolean convert(String inputXtfFileName, String outputDirectory, Settings settings) throws Mgdm2OerebException {        
         var outDirectory = new File(outputDirectory);
         

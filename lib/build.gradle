@@ -89,7 +89,25 @@ tasks.register('copyVenv', Copy) {
     into 'build/resources/main'
 }
 
+tasks.register('zipVenv', Zip) {
+    from ('..') {
+        include 'venv/**'
+        exclude 'venv/bin/**'
+        exclude 'venv/**/__pycache__/'
+        exclude 'venv/lib/python3.8/site-packages/pip/**'
+    }
+   archiveName 'venv.zip'
+   destinationDir(file('build/resources/main'))
+
+}
 
 prepareEnv.dependsOn(enforceGraalPython)
 compileJava.dependsOn(prepareEnv)
 classes.dependsOn(copyVenv)
+classes.dependsOn(zipVenv)
+
+// Weil die venv-Zip-Datei im Artefakt landet, braucht es den Ordner
+// nicht. Dieser wird nur zum Entwickeln gebraucht.
+jar {
+    exclude 'venv/**'
+}

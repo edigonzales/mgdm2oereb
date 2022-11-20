@@ -52,6 +52,10 @@ run {
     "--model=Planungszonen_V1_1", "--themeCode=ch.Planungszonen", "--catalog=ch.sh.OeREBKRMkvs_supplement.xml", "--validate"]
 }
 
+shadowJar {
+   exclude 'venv/**'
+}
+
 graalvmNative {
     binaries {
         main {
@@ -63,11 +67,16 @@ graalvmNative {
             configurationFileDirectories.from(file('src/main/resources/META-INF/native-image/')) 
 
             buildArgs.add('--enable-url-protocols=http,https')                        
+            buildArgs.add('--language:python')                        
+            buildArgs.add("-Dorg.graalvm.launcher.relative.python.home=$System.env.JAVA_HOME/languages/python")                        
+            buildArgs.add("-Dorg.graalvm.launcher.relative.llvm.home=$System.env.JAVA_HOME/languages/llvm")     
+            buildArgs.add("-Dpolyglot.image-build-time.PreinitializeContexts=python");                   
         }
         test {
             verbose = true
             fallback = false 
             buildArgs.add('--enable-url-protocols=http,https') 
+            // TODO
         }
     }
 }

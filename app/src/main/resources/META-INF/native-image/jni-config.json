@@ -1,7 +1,21 @@
 [
 {
+  "name":"[Lcom.sun.management.internal.DiagnosticCommandArgumentInfo;"
+},
+{
+  "name":"[Lcom.sun.management.internal.DiagnosticCommandInfo;"
+},
+{
   "name":"ch.so.agi.mgdm2oereb.App",
   "methods":[{"name":"main","parameterTypes":["java.lang.String[]"] }]
+},
+{
+  "name":"com.sun.management.internal.DiagnosticCommandArgumentInfo",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","boolean","boolean","boolean","int"] }]
+},
+{
+  "name":"com.sun.management.internal.DiagnosticCommandInfo",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","boolean","java.util.List"] }]
 },
 {
   "name":"java.lang.Boolean",
@@ -20,6 +34,10 @@
     {"name":"getProperty","parameterTypes":["java.lang.String"] }, 
     {"name":"setProperty","parameterTypes":["java.lang.String","java.lang.String"] }
   ]
+},
+{
+  "name":"java.util.Arrays",
+  "methods":[{"name":"asList","parameterTypes":["java.lang.Object[]"] }]
 },
 {
   "name":"sun.management.VMManagementImpl",

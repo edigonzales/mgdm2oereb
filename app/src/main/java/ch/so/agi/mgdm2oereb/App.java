@@ -32,21 +32,39 @@ public class App implements Callable<Integer> {
     
     @Option(names = { "-t", "--themeCode" }, required = true, description = "ÖREB theme code of output file.") 
     String themeCode;
-
+    
     @Option(names = { "-c", "--catalog" }, required = true, description = "Catalog file name with additional needed information.") 
     String catalogFileName;
 
+    // TODO: required true, falls öreb..
+    @Option(names = { "--oereblexHost" }, required = false, description = "Host of oereblex (without http(s)).") 
+    String oereblexHost;
+    
+    @Option(names = { "--oereblexCanton" }, required = false, description = "Canton..??.") 
+    String oereblexCanton;
+
+    @Option(names = { "--dummyOfficeName" }, required = false, description = "dummyOfficeName..??.") 
+    String dummyOfficeName;
+    
+    @Option(names = { "--dummyOfficeUrl" }, required = false, description = "dummyOfficeUrl..??.") 
+    String dummyOfficeUrl;
+    
     @Option(names = { "-v", "--validate" }, required = false, description = "Validate transformed INTERLIS transfer file.") 
     boolean validate;
 
     @Override
-    public Integer call() throws Exception {
-        // TODO Auto-generated method stub
-        
+    public Integer call() throws Exception {        
         Settings settings = new Settings();
         settings.setValue(Mgdm2Oereb.MODEL, model);
         settings.setValue(Mgdm2Oereb.THEME_CODE, themeCode);
         settings.setValue(Mgdm2Oereb.CATALOG, catalogFileName);
+        
+        // TODO: nur falls != null
+        settings.setValue(Mgdm2Oereb.OEREBLEX_HOST, oereblexHost);
+        settings.setValue(Mgdm2Oereb.OEREBLEX_CANTON, oereblexCanton);
+        settings.setValue(Mgdm2Oereb.DUMMY_OFFICE_URL, dummyOfficeName);
+        settings.setValue(Mgdm2Oereb.DUMMY_OFFICE_NAME, dummyOfficeUrl);
+        
         settings.setValue(Mgdm2Oereb.VALIDATE, Boolean.toString(validate));
         
         if (outputDirectory == null) {
@@ -54,8 +72,16 @@ public class App implements Callable<Integer> {
         }
         
         Mgdm2Oereb mgdm2oereb = new Mgdm2Oereb();
-        boolean failed = mgdm2oereb.convert(inputFile.getAbsolutePath(), outputDirectory.getAbsolutePath(), settings);
         
+        // TODO
+        // FIXME
+        boolean failed = false;
+        if (oereblexHost != null) {
+            failed = mgdm2oereb.convertWithPy(inputFile.getAbsolutePath(), outputDirectory.getAbsolutePath(), settings);
+        } else {
+            failed = mgdm2oereb.convert(inputFile.getAbsolutePath(), outputDirectory.getAbsolutePath(), settings);
+        }
+       
         return failed ? 1 : 0;
     }
     
