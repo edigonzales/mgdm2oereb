@@ -38,7 +38,7 @@ public class Mgdm2Oereb {
     public void convertWithPy(String inputXtfFileName, String outputDirectory, Settings settings) throws Mgdm2OerebException {
         var outDirectory = new File(outputDirectory);
 
-        
+        // Download Geolink and create xml file for processing in main xsl transformation. 
         try {
             var geoLinkXslFileName = settings.getValue(Mgdm2Oereb.MODEL) + ".oereblex.geolink_list.xsl";
             var geoLinkXslFile = Paths.get(outDirectory.getAbsolutePath(), geoLinkXslFileName).toFile();
@@ -75,6 +75,8 @@ public class Mgdm2Oereb {
         } catch (IOException e) {
             throw new Mgdm2OerebException(e.getMessage());
         }
+        
+        // Main xsl transformation
 
     } 
     

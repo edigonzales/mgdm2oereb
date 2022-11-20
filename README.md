@@ -1,6 +1,7 @@
 # mgdm2oereb
 
 ## todo
+- Wie handhaben, ob oereblex oder kein oereblex? Via CLI Parameter?
 - Unterschiede beim Python-Skript dokumentieren
    * requests module (inkl. Fehlermeldung)
    * Klasse statt Skript
