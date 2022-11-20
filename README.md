@@ -1,5 +1,12 @@
 # mgdm2oereb
 
+## todo
+- Unterschiede beim Python-Skript dokumentieren
+   * requests module (inkl. Fehlermeldung)
+   * Klasse statt Skript
+- Fehlerhandling beim Download-Skript? Wenn z.B. das normale XTF Input ist, gibt es eine Decoding o.ä. Excecption.
+
+
 
 ```
 ./app/build/distributions/mgdm2oereb-0.0.LOCALBUILD/bin/mgdm2oereb --input=./lib/src/test/data/ch.Planungszonen.sh.mgdm.v1_1.xtf --outputDirectory=/Users/stefan/tmp/mgdm2oereb/ --model=Planungszonen_V1_1 --themeCode=ch.Planungszonen --catalog=ch.sh.OeREBKRMkvs_supplement.xml --validate
