@@ -67,6 +67,9 @@ tasks.register('enforceGraalPython') {
 }
 
 tasks.register('prepareEnv') {
+    onlyIf {
+        !file("${project.rootDir}/venv").exists()
+    }
     doLast {
         exec {
             workingDir "${project.rootDir}"

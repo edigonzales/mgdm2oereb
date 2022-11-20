@@ -7,8 +7,6 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.interlis2.validator.Validator;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,9 +32,19 @@ class Mgdm2OerebTest {
     }
     
     @Test 
-    public void convertWithOereblex() throws IOException {
+    public void convertWithOereblex() throws Mgdm2OerebException {
+        var settings = new Settings();
+        settings.setValue(Mgdm2Oereb.MODEL, "Planungszonen_V1_1");
+        settings.setValue(Mgdm2Oereb.THEME_CODE, "ch.Planungszonen");
+        settings.setValue(Mgdm2Oereb.CATALOG, "ch.sh.OeREBKRMkvs_supplement.xml");
+        settings.setValue(Mgdm2Oereb.OEREBLEX_HOST, "oereblex.sh.ch");
+        settings.setValue(Mgdm2Oereb.OEREBLEX_CANTON, "sh");
+        settings.setValue(Mgdm2Oereb.DUMMY_OFFICE_NAME, "DUMMYOFFICE");
+        settings.setValue(Mgdm2Oereb.DUMMY_OFFICE_URL, "https://google.ch");
+        settings.setValue(Mgdm2Oereb.VALIDATE, Boolean.toString(false));
+
         Mgdm2Oereb mgdm2oereb = new Mgdm2Oereb();
-        mgdm2oereb.convertWithPy();
+        mgdm2oereb.convertWithPy("src/test/data/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf", "/Users/stefan/tmp/mgdm2oereb/", settings);
     }
     
 }

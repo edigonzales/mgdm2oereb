@@ -33,9 +33,22 @@ public class Mgdm2Oereb {
     
     private static final String PYTHON = "python";
 
-    private static final String SOURCE_FILE_NAME = "xsl/oereblex.download.dummy.py";
+    private static final String SOURCE_FILE_NAME = "xsl/oereblex.download.py";
     
-    public void convertWithPy() throws IOException {
+    public void convertWithPy(String inputXtfFileName, String outputDirectory, Settings settings) throws Mgdm2OerebException {
+        var outDirectory = new File(outputDirectory);
+
+        
+        try {
+            var geoLinkXslFileName = settings.getValue(Mgdm2Oereb.MODEL) + ".oereblex.geolink_list.xsl";
+            var geoLinkXslFile = Paths.get(outDirectory.getAbsolutePath(), geoLinkXslFileName).toFile();
+            Util.loadFile("xsl/"+geoLinkXslFileName, geoLinkXslFile);  
+            
+            settings.setValue(Mgdm2Oereb.GEOLINK_LIST_TRAFO_PATH, geoLinkXslFile.getAbsolutePath());
+        } catch (IOException e) {
+            throw new Mgdm2OerebException(e.getMessage());
+        }
+
         //TODO if/else (dev vs prod(jar))
         var venvExePath = Mgdm2Oereb.class.getClassLoader()
                 .getResource(Paths.get("venv", "bin", "graalpy").toString())
@@ -57,8 +70,10 @@ public class Mgdm2Oereb {
             Value pyOereblexDownloader = pyOereblexDownloaderClass.newInstance();
 
             OereblexDownloader oereblexDownloader = pyOereblexDownloader.as(OereblexDownloader.class);
-            oereblexDownloader.download();
+            oereblexDownloader.run(new File(inputXtfFileName).getAbsolutePath(), outDirectory.getAbsolutePath(), settings);
 
+        } catch (IOException e) {
+            throw new Mgdm2OerebException(e.getMessage());
         }
 
     } 
@@ -108,16 +123,19 @@ public class Mgdm2Oereb {
         return true;
     }
 
+    // TODO: Woher / wie kennt Python diese? HostExport o.ä.?
     public static final String MODEL = "MODEL"; 
     
     public static final String THEME_CODE = "THEME_CODE";
     
     public static final String OEREBLEX_HOST = "OEREBLEX_HOST";
-     
-    public static final String CATALOG = "CATALOG";
-   
+
     public static final String OEREBLEX_CANTON = "OEREBLEX_CANTON";
     
+    public static final String GEOLINK_LIST_TRAFO_PATH = "GEOLINK_LIST_TRAFO_PATH";
+
+    public static final String CATALOG = "CATALOG";
+       
     public static final String DUMMY_OFFICE_NAME = "DUMMY_OFFICE_NAME";
     
     public static final String DUMMY_OFFICE_URL = "DUMMY_OFFICE_URL";
