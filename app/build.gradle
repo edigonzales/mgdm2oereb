@@ -45,11 +45,12 @@ application {
 }
 
 run {
+    //args = ["--help"]
     //args = ["--foo", "bar"]
     //args = ["--server", "--directory=/Users/stefan/tmp/ili2repo/models/", "--init"]
     //args = ["--help"]
-    args = ["--input=../lib/src/test/data/ch.Planungszonen.sh.mgdm.v1_1.xtf", "--outputDirectory=/Users/stefan/tmp/mgdm2oereb/",
-    "--model=Planungszonen_V1_1", "--themeCode=ch.Planungszonen", "--catalog=ch.sh.OeREBKRMkvs_supplement.xml", "--validate"]
+    //args = ["--loglevel=DEBUG", "--input=../lib/src/test/data/ch.Planungszonen.sh.mgdm.v1_1.xtf", "--outputDirectory=/Users/stefan/tmp/mgdm2oereb/", "--model=Planungszonen_V1_1", "--themeCode=ch.Planungszonen", "--catalog=ch.sh.OeREBKRMkvs_supplement.xml", "--validate"]
+    args = ["--loglevel=DEBUG", "--input=../lib/src/test/data/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf", "--outputDirectory=/Users/stefan/tmp/mgdm2oereb/", "--model=Planungszonen_V1_1", "--themeCode=ch.Planungszonen", "--catalog=ch.sh.OeREBKRMkvs_supplement.xml", "--validate", "--oereblexHost=oereblex.sh.ch", "--oereblexCanton=sh", "--dummyOfficeName=DUMMY_OFFICE_NAME", "--dummyOfficeUrl=https://google.ch"]
 }
 
 shadowJar {

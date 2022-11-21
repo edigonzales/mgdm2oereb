@@ -3,7 +3,10 @@ package ch.so.agi.mgdm2oereb;
 import java.io.File;
 import java.util.concurrent.Callable;
 
+import org.slf4j.LoggerFactory;
+
 import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -20,74 +23,83 @@ import picocli.CommandLine.Option;
         optionListHeading = "%nOptions:%n"
       )
 public class App implements Callable<Integer> {
-    
-    @Option(names = { "-i", "--input" }, required = true, description = "MGDM input file that needs to be transformed.")
-    File inputFile;
-    
-    @Option(names = { "-d", "--outputDirectory" }, required = false, description = "The directory where the transformed INTERLIS file will be stored.")
-    File outputDirectory;
 
-    @Option(names = { "-m", "--model" }, required = true, description = "INTERLIS data model of input file.") 
-    String model;
+    @Option(names = { "-l", "--loglevel" }, required = false, defaultValue = "INFO", description = "Loglevel [ERROR | WARN | INFO | DEBUG | TRACE]")
+    String loglevel;
     
-    @Option(names = { "-t", "--themeCode" }, required = true, description = "ÖREB theme code of output file.") 
-    String themeCode;
-    
-    @Option(names = { "-c", "--catalog" }, required = true, description = "Catalog file name with additional needed information.") 
-    String catalogFileName;
+    @ArgGroup(validate = false, heading = "%nTransformation:%n")
+    TransformationOptions transformationOptions;
 
-    // TODO: required true, falls öreb..
-    @Option(names = { "--oereblexHost" }, required = false, description = "Host of oereblex (without http(s)).") 
-    String oereblexHost;
-    
-    @Option(names = { "--oereblexCanton" }, required = false, description = "Canton..??.") 
-    String oereblexCanton;
+    static class TransformationOptions {
+        @Option(names = { "-i", "--input" }, required = true, description = "MGDM input file that needs to be transformed.")
+        File inputFile;
+        
+        @Option(names = { "-d", "--outputDirectory" }, required = false, description = "The directory where the transformed INTERLIS file will be stored.")
+        File outputDirectory;
 
-    @Option(names = { "--dummyOfficeName" }, required = false, description = "dummyOfficeName..??.") 
-    String dummyOfficeName;
-    
-    @Option(names = { "--dummyOfficeUrl" }, required = false, description = "dummyOfficeUrl..??.") 
-    String dummyOfficeUrl;
-    
-    @Option(names = { "-v", "--validate" }, required = false, description = "Validate transformed INTERLIS transfer file.") 
-    boolean validate;
+        @Option(names = { "-m", "--model" }, required = true, description = "INTERLIS data model of input file.") 
+        String model;
+        
+        @Option(names = { "-t", "--themeCode" }, required = true, description = "ÖREB theme code of output file.") 
+        String themeCode;
+        
+        @Option(names = { "-c", "--catalog" }, required = true, description = "Catalog file name with additional needed information.") 
+        String catalogFileName;
+        
+        @Option(names = { "-v", "--validate" }, required = false, description = "Validate the transformed INTERLIS transfer file.") 
+        boolean validate;
+    }
+
+    @ArgGroup(exclusive = false, heading = "%nOEREBlex:%n")
+    OereblexOptions oereblexOptions;
+
+    static class OereblexOptions {
+        @Option(names = { "--oereblexHost" }, required = true, description = "Host of oereblex application (without protocol).") 
+        String oereblexHost;
+        
+        @Option(names = { "--oereblexCanton" }, required = true, description = "Two letter abbrevation of canton.") 
+        String oereblexCanton;
+
+        @Option(names = { "--dummyOfficeName" }, required = true, description = "A dummy office name.") 
+        String dummyOfficeName;
+        
+        @Option(names = { "--dummyOfficeUrl" }, required = true, description = "A dummy office url.") 
+        String dummyOfficeUrl;
+    }
 
     @Override
-    public Integer call() throws Exception {        
+    public Integer call() throws Exception {     
+        System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, loglevel);
+        org.slf4j.Logger log = LoggerFactory.getLogger(App.class);
+
         Settings settings = new Settings();
-        settings.setValue(Mgdm2Oereb.MODEL, model);
-        settings.setValue(Mgdm2Oereb.THEME_CODE, themeCode);
-        settings.setValue(Mgdm2Oereb.CATALOG, catalogFileName);
-        
-        // TODO: nur falls != null
-        settings.setValue(Mgdm2Oereb.OEREBLEX_HOST, oereblexHost);
-        settings.setValue(Mgdm2Oereb.OEREBLEX_CANTON, oereblexCanton);
-        settings.setValue(Mgdm2Oereb.DUMMY_OFFICE_URL, dummyOfficeName);
-        settings.setValue(Mgdm2Oereb.DUMMY_OFFICE_NAME, dummyOfficeUrl);
-        
-        settings.setValue(Mgdm2Oereb.VALIDATE, Boolean.toString(validate));
-        
-        if (outputDirectory == null) {
-            outputDirectory = inputFile.getParentFile();
+        settings.setValue(Mgdm2Oereb.MODEL, transformationOptions.model);
+        settings.setValue(Mgdm2Oereb.THEME_CODE, transformationOptions.themeCode);
+        settings.setValue(Mgdm2Oereb.CATALOG, transformationOptions.catalogFileName);        
+        settings.setValue(Mgdm2Oereb.VALIDATE, Boolean.toString(transformationOptions.validate));
+        settings.setValue(Mgdm2Oereb.LOGLEVEL, loglevel);
+
+        if (transformationOptions.outputDirectory == null) {
+            transformationOptions.outputDirectory = transformationOptions.inputFile.getParentFile();
         }
-        
-        Mgdm2Oereb mgdm2oereb = new Mgdm2Oereb();
-        
-        // TODO
-        // FIXME
-        boolean failed = false;
-        if (oereblexHost != null) {
-            failed = mgdm2oereb.convertWithPy(inputFile.getAbsolutePath(), outputDirectory.getAbsolutePath(), settings);
-        } else {
-            failed = mgdm2oereb.convert(inputFile.getAbsolutePath(), outputDirectory.getAbsolutePath(), settings);
+
+        if (oereblexOptions != null) {
+            settings.setValue(Mgdm2Oereb.OEREBLEX_HOST, oereblexOptions.oereblexHost);
+            settings.setValue(Mgdm2Oereb.OEREBLEX_CANTON, oereblexOptions.oereblexCanton);
+            settings.setValue(Mgdm2Oereb.DUMMY_OFFICE_URL, oereblexOptions.dummyOfficeName);
+            settings.setValue(Mgdm2Oereb.DUMMY_OFFICE_NAME, oereblexOptions.dummyOfficeUrl);
         }
-       
-        return failed ? 1 : 0;
+
+        boolean valid = false;
+
+        Mgdm2Oereb mgdm2oereb = new Mgdm2Oereb();        
+        valid = mgdm2oereb.convert(transformationOptions.inputFile.getAbsolutePath(), transformationOptions.outputDirectory.getAbsolutePath(), settings);
+
+        return valid ? 0 : 1;
     }
     
     public static void main(String... args) {
-        int exitCode = new CommandLine(new App())
-                .execute(args);
+        int exitCode = new CommandLine(new App()).execute(args);
         System.exit(exitCode);
     }
 }

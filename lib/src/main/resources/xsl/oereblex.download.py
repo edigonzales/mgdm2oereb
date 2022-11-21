@@ -7,24 +7,36 @@ import json
 import logging
 import base64
 import polyglot
+import java
 
-loglevel_config = os.environ.get('LOG_LEVEL')
+# loglevel_config = os.environ.get('LOG_LEVEL')
 
-if loglevel_config == 'error':
-    log_level = logging.ERROR
-elif loglevel_config == 'warning':
-    log_level = logging.WARNING
-elif loglevel_config == 'debug':
-    log_level = logging.DEBUG
-else:
-    log_level = logging.INFO
+# if loglevel_config == 'ERROR':
+#     log_level = logging.ERROR
+# elif loglevel_config == 'WARN':
+#     log_level = logging.WARNING
+# elif loglevel_config == 'DEBUG':
+#     log_level = logging.DEBUG
+# else:
+#     log_level = logging.INFO
 
 logging.basicConfig(
-    level=log_level,
+    level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s'
 )
 
 OEREB_KRM_MODEL = 'OeREBKRM_V2_0'
+
+def map_loglevel(loglevel_config):
+    if loglevel_config == 'ERROR':
+        log_level = logging.ERROR
+    elif loglevel_config == 'WARN':
+        log_level = logging.WARNING
+    elif loglevel_config == 'DEBUG':
+        log_level = logging.DEBUG
+    else:
+        log_level = logging.INFO
+    return log_level
 
 def extract_geolink_id(link):
     return link.split('/')[-1].split('.')[0]
@@ -68,11 +80,14 @@ def multilingual_uri(parts):
     return multilingual_text
 
 def process_oereblex(xtf_path, output_directory, settings):
-    geolink_list_trafo_path = settings.getValue("GEOLINK_LIST_TRAFO_PATH")
+    Mgdm2Oereb = java.type("ch.so.agi.mgdm2oereb.Mgdm2Oereb")
+    logging.getLogger().setLevel(map_loglevel(settings.getValue(Mgdm2Oereb.LOGLEVEL)))
+
+    geolink_list_trafo_path = settings.getValue(Mgdm2Oereb.GEOLINK_LIST_TRAFO_PATH)
     result_file_path = os.path.join(output_directory, 'oereblex.xml') # wild guess....
-    oereb_lex_host = settings.getValue("OEREBLEX_HOST")
-    dummy_office_name = settings.getValue("DUMMY_OFFICE_NAME")
-    dummy_office_url = settings.getValue("DUMMY_OFFICE_URL")
+    oereb_lex_host = settings.getValue(Mgdm2Oereb.OEREBLEX_HOST)
+    dummy_office_name = settings.getValue(Mgdm2Oereb.DUMMY_OFFICE_NAME)
+    dummy_office_url = settings.getValue(Mgdm2Oereb.DUMMY_OFFICE_URL)
 
     print(xtf_path)
     print(geolink_list_trafo_path)
