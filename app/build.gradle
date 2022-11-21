@@ -66,11 +66,12 @@ graalvmNative {
             fallback = false 
             configurationFileDirectories.from(file('src/main/resources/META-INF/native-image/')) 
 
-            buildArgs.add('--enable-url-protocols=http,https')                        
-            buildArgs.add('--language:python')                        
-            buildArgs.add("-Dorg.graalvm.launcher.relative.python.home=$System.env.JAVA_HOME/languages/python")                        
-            buildArgs.add("-Dorg.graalvm.launcher.relative.llvm.home=$System.env.JAVA_HOME/languages/llvm")     
-            buildArgs.add("-Dpolyglot.image-build-time.PreinitializeContexts=python");                   
+            buildArgs.add('--enable-url-protocols=http,https')
+            buildArgs.add('--language:python')
+            buildArgs.add("-Dorg.graalvm.launcher.relative.python.home=$System.env.JAVA_HOME/languages/python")
+            buildArgs.add("-Dorg.graalvm.launcher.relative.llvm.home=$System.env.JAVA_HOME/languages/llvm")
+            buildArgs.add("-Dpolyglot.image-build-time.PreinitializeContexts=python");
+            buildArgs.add("-Dtruffle.TruffleRuntime=com.oracle.truffle.api.impl.DefaultTruffleRuntime");
         }
         test {
             verbose = true

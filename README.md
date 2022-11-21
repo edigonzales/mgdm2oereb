@@ -11,7 +11,7 @@
   * convert-Methoden: was kann man zusammenfassen?
 - ~~if/else venv/bin/ dev vs prod depl~~
 - Kann man Python die Mgdm2Oereb-Keys bekanntmachen?
-- Wie sinnvoll die resouce-config aus verschiedenen Testläufen mergen? Oder umgekehrt: wie kann man verschiede Testläufe mit dem Agent machen? Dito "{ "name": "ch.so.agi.mgdm2oereb.Settings", "allPublicMethods": true },": Wird nicht automatisch erkannt.
+- Wie sinnvoll die resouce-config aus verschiedenen Testläufen mergen? Oder umgekehrt: wie kann man verschiede Testläufe mit dem Agent machen? Dito "{ "name": "ch.so.agi.mgdm2oereb.Settings", "allPublicMethods": true },": Wird nicht automatisch erkannt. https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html Testen mit Agent sollte doch möglich sein.
 - Eigentlich muss man die config.json trennen (app und lib). Aber wenn man es eh immer machen muss, wenn man eine Anwendung macht, kann man es auch dort lassen? 
 - ~~!!Context pre-initialisieren!! -> nicht wirklich nötig, ist schnell im native-image (dünkt mich)~~. ~~Done. Gefühlt aber nicht noch schneller.~~
 - Loglevel nicht via env var setzen im Python-Script.
