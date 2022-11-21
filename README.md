@@ -30,13 +30,12 @@ Die Anwendung besteht aus einer einzelnen Komponente.
 - Clean Code:
   ~~* convert-Methoden: was kann man zusammenfassen?~~
 - ~~if/else venv/bin/ dev vs prod depl~~
-- Kann man Python die Mgdm2Oereb-Keys bekanntmachen?
-- Wie sinnvoll die resouce-config aus verschiedenen Testläufen mergen? Oder umgekehrt: wie kann man verschiede Testläufe mit dem Agent machen? Dito "{ "name": "ch.so.agi.mgdm2oereb.Settings", "allPublicMethods": true },": Wird nicht automatisch erkannt. https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html Testen mit Agent sollte doch möglich sein.
+- ~~Kann man Python die Mgdm2Oereb-Keys bekanntmachen? -> Ja.~~
+- Wie sinnvoll die resouce-config aus verschiedenen Testläufen mergen? Oder umgekehrt: wie kann man verschiede Testläufe mit dem Agent machen? Dito "{ "name": "ch.so.agi.mgdm2oereb.Settings", "allPublicMethods": true },": Wird nicht automatisch erkannt. https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html Testen mit Agent sollte doch möglich sein. Das Interface, welches ich manuell hinzufügte, fällt ja jetzt weg, weil es nicht geht (oder ich nicht verstehe).
 - Eigentlich muss man die config.json trennen (app und lib). Aber wenn man es eh immer machen muss, wenn man eine Anwendung macht, kann man es auch dort lassen? 
 - ~~!!Context pre-initialisieren!! -> nicht wirklich nötig, ist schnell im native-image (dünkt mich)~~. ~~Done. Gefühlt aber nicht noch schneller.~~
-- Loglevel nicht via env var setzen im Python-Script.
+~~- Loglevel nicht via env var setzen im Python-Script.~~
 - Tests
-- "-Dorg.slf4j.simpleLogger.defaultLogLevel=debug" -> Dokumentation
 
 ```
 ./app/build/distributions/mgdm2oereb-0.0.LOCALBUILD/bin/mgdm2oereb --input=./lib/src/test/data/ch.Planungszonen.sh.mgdm.v1_1.xtf --outputDirectory=/Users/stefan/tmp/mgdm2oereb/ --model=Planungszonen_V1_1 --themeCode=ch.Planungszonen --catalog=ch.sh.OeREBKRMkvs_supplement.xml --validate

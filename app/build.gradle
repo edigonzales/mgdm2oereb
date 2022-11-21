@@ -53,6 +53,10 @@ run {
     args = ["--loglevel=DEBUG", "--input=../lib/src/test/data/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf", "--outputDirectory=/Users/stefan/tmp/mgdm2oereb/", "--model=Planungszonen_V1_1", "--themeCode=ch.Planungszonen", "--catalog=ch.sh.OeREBKRMkvs_supplement.xml", "--validate", "--oereblexHost=oereblex.sh.ch", "--oereblexCanton=sh", "--dummyOfficeName=DUMMY_OFFICE_NAME", "--dummyOfficeUrl=https://google.ch"]
 }
 
+// Weil ich momentan die Fatjar für den Agent verwende, landet
+// der venv-Ordner nicht im resource-config.json und entsprechend
+// nicht im native image. Falls ich den Agent beim Testen o.ä.
+// verwende, muss ich nochmals über die Bücher und prüfen.
 shadowJar {
    exclude 'venv/**'
 }
