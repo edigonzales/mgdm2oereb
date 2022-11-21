@@ -16,6 +16,7 @@
 - ~~!!Context pre-initialisieren!! -> nicht wirklich nötig, ist schnell im native-image (dünkt mich)~~. ~~Done. Gefühlt aber nicht noch schneller.~~
 - Loglevel nicht via env var setzen im Python-Script.
 - https://picocli.info/#_argument_groups
+- Tests
 
 ```
 ./app/build/distributions/mgdm2oereb-0.0.LOCALBUILD/bin/mgdm2oereb --input=./lib/src/test/data/ch.Planungszonen.sh.mgdm.v1_1.xtf --outputDirectory=/Users/stefan/tmp/mgdm2oereb/ --model=Planungszonen_V1_1 --themeCode=ch.Planungszonen --catalog=ch.sh.OeREBKRMkvs_supplement.xml --validate
