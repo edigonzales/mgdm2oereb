@@ -1,6 +1,6 @@
 # mgdm2oereb
 
-Transformiert eine INTELRIS-Transferdatei eines MGDM in das ÖREB-Kataster-Rahmenmodell (Transferstruktur).
+Transformiert eine INTERLIS-Transferdatei eines MGDM in das ÖREB-Kataster-Rahmenmodell (Transferstruktur).
 
 Für jedes Thema gibt es eine Transferdefinition und allenfalls eine zusätzliche Konfigurationsdatei, um fehlende Daten (z.B. Url des WMS) zu ergänzen.
 
@@ -8,11 +8,47 @@ Falls in den Daten "nur" ein ÖREBlex-Geolink erfasst ist, wird dieser aufgelös
 
 ## Komponenten
 
-Die Anwendung besteht aus einer einzelnen Komponente.
+Die Anwendung besteht aus der vorliegenden, einzelnen Komponente.
+
+TODO: UML-Komponentendiagramm (Mensch, CLI, Filesystem (in, out))
 
 ## Benutzung
 
-## Konfigurieren und starten
+Die Anwendung wird auf der Kommandozeile gestartet:
+
+```
+./mgdm2oereb --help
+```
+
+Optionen für Transformation:
+
+| Name | Beschreibung | Standard |
+|-----|-----|-----|
+| `--input` | Vollständiger, absoluter Pfad der Themebereitstellungs-Konfigurations-XML-Datei. | |
+| `--outputDirectory` | Vollständiger, absoluter Pfad der Themebereitstellungs-Konfigurations-XML-Datei. | Verzeichnis der Inputdatei. |
+| `--catalog` | Name der XTF-Datei (Datenmodell _OeREBKRMlegdrst_V2_0_) mit zusätzlichen Informationen, die für die Transformation benötigt werden. Die Datei selber liegt der Anwendung bei und muss lokal nicht vorliegen. | |
+| `--model` | Datenmodell der Inputdatei (MGDM-Datenmodell). | |
+| `--themeCode` | Code des ÖREB-Themas. Z.B "ch.Planungszonen" | |
+| `--validate` | Die resultierende Datei wird auf Modellkonformität geprüft. | false |
+
+Zusätzliche Optionen für Transformation mit ÖREBlex:
+
+| Name | Beschreibung | Standard |
+|-----|-----|-----|
+| `--oereblexHost` | Hostname der ÖREBlex-Webanwendung. Ohne Protokoll (http:// resp. https://) | |
+| `--oereblexCanton` | Abkürzung des Kantons. Z.B. "sh". | |
+| `--dummyOfficeName` | Platzhalter für einen Office-Namen (aka zuständige Stelle) | |
+| `--dummyOfficeUrl` | Platzhalter für eine Office-Url. | |
+
+Falls eine ÖREBlex-Option verwendet wird, sind alle anderen zwingend.
+
+Weitere Optionen:
+
+| Name | Beschreibung | Standard |
+|-----|-----|-----|
+| `--loglevel` | Setzen des Loglevels. [ERROR | WARN | INFO | DEBUG ] | INFO |
+
+## ~~Konfigurieren und starten~~
 
 ## Externe Abhängigkeiten
 
