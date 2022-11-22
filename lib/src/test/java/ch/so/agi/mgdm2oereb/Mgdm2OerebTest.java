@@ -32,7 +32,7 @@ class Mgdm2OerebTest {
     }
     
     @Test 
-    public void convertWithOereblex() throws Mgdm2OerebException {
+    public void convertWithOereblex(@TempDir Path tempDir) throws Mgdm2OerebException {
         var settings = new Settings();
         settings.setValue(Mgdm2Oereb.MODEL, "Planungszonen_V1_1");
         settings.setValue(Mgdm2Oereb.THEME_CODE, "ch.Planungszonen");
@@ -42,6 +42,8 @@ class Mgdm2OerebTest {
         settings.setValue(Mgdm2Oereb.DUMMY_OFFICE_NAME, "DUMMYOFFICE");
         settings.setValue(Mgdm2Oereb.DUMMY_OFFICE_URL, "https://google.ch");
         settings.setValue(Mgdm2Oereb.VALIDATE, Boolean.toString(true));
+
+        var tempDirectory = tempDir.toFile();
 
         Mgdm2Oereb mgdm2oereb = new Mgdm2Oereb();
         //mgdm2oereb.convert("src/test/data/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf", "/Users/stefan/tmp/mgdm2oereb/", settings);
