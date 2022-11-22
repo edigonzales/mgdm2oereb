@@ -21,7 +21,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - uses: graalvm/setup-graalvm@v1
+      - name: Setup GraalVM
+        uses: graalvm/setup-graalvm@v1
         with:
           version: '22.3.0'
           java-version: '17'
@@ -37,6 +38,10 @@ jobs:
         with:
           name: reports
           path: lib/build/reports/tests/
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install libxml2-dev libxslt1-dev
 
       - name: Build app with Gradle
         id: buildJvm
@@ -61,13 +66,13 @@ jobs:
           OSSRH_USERNAME: ${{secrets.OSSRH_USERNAME}}
           OSSRH_PASSWORD: ${{secrets.OSSRH_PASSWORD}} 
 
-      # - name: 'Upload build artifact'
-      #   if: always() && (steps.buildJvm.outcome == 'success')
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: artifacts-jvm
-      #     path: |
-      #       app/build/distributions/*.zip
+      - name: 'Upload build artifact'
+        if: always() && (steps.buildJvm.outcome == 'success')
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifacts-jvm
+          path: |
+            app/build/distributions/*.zip
 
   # build-native:
   #   name: 'Build with Graal on ${{ matrix.os }}'
@@ -88,7 +93,7 @@ jobs:
   #       with:
   #         version: '22.3.0'
   #         java-version: '17'
-  #         components: 'native-image'
+  #         components: 'native-image,python'
   #         cache: 'gradle'
   #         github-token: ${{ secrets.GITHUB_TOKEN }}
 
