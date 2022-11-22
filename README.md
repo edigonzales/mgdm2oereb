@@ -6,12 +6,6 @@ Für jedes Thema gibt es eine Transferdefinition und allenfalls eine zusätzlich
 
 Falls in den Daten "nur" ein ÖREBlex-Geolink erfasst ist, wird dieser aufgelöst und die Dokumente werden korrekt im Rahmenmodell erfasst.
 
-## Komponenten
-
-Die Anwendung besteht aus der vorliegenden, einzelnen Komponente.
-
-TODO: UML-Komponentendiagramm (Mensch, CLI, Filesystem (in, out))
-
 ## Benutzung
 
 Die Anwendung wird auf der Kommandozeile gestartet:
