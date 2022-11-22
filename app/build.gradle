@@ -57,6 +57,8 @@ run {
 // der venv-Ordner nicht im resource-config.json und entsprechend
 // nicht im native image. Falls ich den Agent beim Testen o.ä.
 // verwende, muss ich nochmals über die Bücher und prüfen.
+
+// Das ist überflüssig? Weil es bereits in der lib gemacht wird?
 shadowJar {
    exclude 'venv/**'
 }

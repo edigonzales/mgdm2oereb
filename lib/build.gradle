@@ -1,10 +1,13 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
+    id 'signing'
 }
 
 apply from: "$rootDir/gradle/versioning.gradle"
 
 group = 'io.github.sogis'
+def myArtifactId = "mgdm2oereb"
 
 sourceCompatibility = '17'
 targetCompatibility = '17'
@@ -23,22 +26,6 @@ configurations {
     jar.archiveName = myArtifactId+"-lib-"+version+".jar"
 }
 */
-
-/*
-sourceSets {
-    main {
-        resources {
-            srcDirs  "../venv/"
-        }
-    }
-}
-*/
-
-// TODO beim Verpacken in das Jar alles wieder excludieren resp. nur xsl und catalogs inkludieren.
-// Sonst mit copy task den ganzen venv-Ordner reinkopieren.
-
-//sourceSets.main.resources.srcDirs += [ "../venv" ]
-//sourceSets.main.resources.excludes = [ "bin" ]
 
 configurations {
     all*.exclude group: 'xml-apis'
@@ -98,7 +85,6 @@ tasks.register('zipVenv', Zip) {
     }
    archiveName 'venv.zip'
    destinationDir(file('build/resources/main'))
-
 }
 
 prepareEnv.dependsOn(enforceGraalPython)
@@ -110,4 +96,59 @@ classes.dependsOn(zipVenv)
 // nicht. Dieser wird nur zum Entwickeln gebraucht.
 jar {
     exclude 'venv/**'
+}
+
+// Deploy library to maven central
+project.archivesBaseName = myArtifactId
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    baseName myArtifactId
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+javadoc.failOnError = false
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    baseName myArtifactId
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId = group
+            artifactId = myArtifactId
+
+            pom {
+                name = "mgdm2oereb"
+                url = "https://github.com/edigonzales/mgdm2oereb"
+                description = myArtifactId
+                scm {
+                    connection = "scm:git:https@github.com/edigonzales/mgdm2oereb"
+                    developerConnection = "scm:git:https@github.com/edigonzales/mgdm2oereb"
+                    url = "https://github.com/edigonzales/mgdm2oereb"
+                }
+                licenses {
+                    license {
+                        name = "MIT"
+                        url = "https://github.com/edigonzales/mgdm2oereb/blob/master/LICENSE"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "edigonzales"
+                        name = "Stefan Ziegler"
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
 }
