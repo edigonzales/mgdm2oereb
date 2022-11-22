@@ -46,7 +46,23 @@ Weitere Optionen:
 
 | Name | Beschreibung | Standard |
 |-----|-----|-----|
-| `--loglevel` | Setzen des Loglevels. [ERROR | WARN | INFO | DEBUG ] | INFO |
+| `--loglevel` | Setzen des Loglevels. [ERROR, WARN, INFO, DEBUG] | INFO |
+
+Beispielaufruf ohne ÖREBlex:
+
+MGDM (`--inputFile`): https://raw.githubusercontent.com/edigonzales/mgdm2oereb/main/lib/src/test/data/ch.Planungszonen.sh.mgdm.v1_1.xtf
+
+```
+./mgdm2oereb --input=~/Downloads/ch.Planungszonen.sh.mgdm.v1_1.xtf --model=Planungszonen_V1_1 --themeCode=ch.Planungszonen --catalog=ch.sh.OeREBKRMkvs_supplement.xml --validate
+```
+
+Beispielaufruf mit ÖREBlex:
+
+MGDM (`--inputFile`): https://raw.githubusercontent.com/edigonzales/mgdm2oereb/main/lib/src/test/data/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf
+
+```
+./mgdm2oereb --input=~/Downloads/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf --model=Planungszonen_V1_1 --themeCode=ch.Planungszonen --catalog=ch.sh.OeREBKRMkvs_supplement.xml --validate --oereblexHost oereblex.sh.ch --oereblexCanton sh --dummyOfficeName DUMMY_OFFICE_NAME --dummyOfficeUrl https://interlis.ch
+```
 
 ## ~~Konfigurieren und starten~~
 
@@ -78,10 +94,10 @@ Weitere Optionen:
 ```
 
 
-### GraalVM
+### [move to develop / Interne Struktur] GraalVM
 
 
-#### Ohne OEREBlex
+#### [move to develop / Interne Struktur] Ohne OEREBlex
 ```
 ./gradlew app:shadowJar
 
@@ -92,7 +108,7 @@ java -agentlib:native-image-agent=config-output-dir=app/src/main/resources/META-
 ./app/build/native/nativeCompile/mgdm2oereb --input=./lib/src/test/data/ch.Planungszonen.sh.mgdm.v1_1.xtf --outputDirectory=/Users/stefan/tmp/mgdm2oereb/ --model=Planungszonen_V1_1 --themeCode=ch.Planungszonen --catalog=ch.sh.OeREBKRMkvs_supplement.xml --validate
 ```
 
-#### Mit OEREBlex
+#### [move to develop / Interne Struktur] Mit OEREBlex
 ```
 ./gradlew app:shadowJar
 
