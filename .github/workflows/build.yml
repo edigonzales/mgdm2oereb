@@ -45,7 +45,7 @@ jobs:
 
       - name: Build app with Gradle
         id: buildJvm
-        run: ./gradlew clean app:build -i
+        run: ./gradlew app:build -i
 
       - uses: actions/upload-artifact@v2
         if: ${{ failure() }}
