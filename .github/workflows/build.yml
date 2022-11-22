@@ -154,7 +154,7 @@ jobs:
 
       - name: Release distributions
         run: |
-          ./gradlew -i app:jreleaserRelease
+          ./gradlew -i app:jreleaserRelease -x enforceGraalPython prepareEnv copyVenv zipVenv
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ success() && github.ref == 'refs/heads/main'}}
