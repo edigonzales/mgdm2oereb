@@ -123,44 +123,44 @@ jobs:
           path: |
             app/build/distributions/*.zip
 
-  # release:
-  #   needs: [build-jvm, build-native]
-  #   runs-on: ubuntu-latest
-  #   steps:
+  release:
+    needs: [build-jvm, build-native]
+    runs-on: ubuntu-22.04
+    steps:
 
-  #     - name: 'Check out repository'
-  #       uses: actions/checkout@v2
-  #       with:
-  #         ref: ${{ steps.head.outputs.content }}
-  #         fetch-depth: 0
+      - name: 'Check out repository'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.head.outputs.content }}
+          fetch-depth: 0
 
-  #     - name: 'Download all build artifacts'
-  #       uses: actions/download-artifact@v2
+      - name: 'Download all build artifacts'
+        uses: actions/download-artifact@v2
 
-  #     - name: 'List artifacts'
-  #       run: |
-  #         ls -la /home/runner/work/oereb-cts/oereb-cts/artifacts-jvm
-  #         ls -la /home/runner/work/oereb-cts/oereb-cts/artifacts-native
-  #         ls -la /home/runner/work/oereb-cts/oereb-cts/
+      - name: 'List artifacts'
+        run: |
+          ls -la /home/runner/work/oereb-cts/oereb-cts/artifacts-jvm
+          ls -la /home/runner/work/oereb-cts/oereb-cts/artifacts-native
+          ls -la /home/runner/work/oereb-cts/oereb-cts/
 
-  #     - name: Set up JDK 17
-  #       uses: actions/setup-java@v3
-  #       with:
-  #         distribution: 'liberica' 
-  #         java-version: '17'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'liberica' 
+          java-version: '17'
 
-  #     - uses: actions/cache@v3
-  #       with:
-  #         path: |
-  #           ~/.gradle/caches
-  #           ~/.gradle/wrapper
-  #         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-gradle-
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
-  #     - name: Release distributions
-  #       run: |
-  #         ./gradlew -i app:jreleaserRelease
-  #       env:
-  #         JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       if: ${{ success() && github.ref == 'refs/heads/main'}}
+      - name: Release distributions
+        run: |
+          ./gradlew -i app:jreleaserRelease
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ success() && github.ref == 'refs/heads/main'}}
