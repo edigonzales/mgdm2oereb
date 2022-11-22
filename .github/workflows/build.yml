@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-jvm:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
 
@@ -75,7 +75,7 @@ jobs:
             app/build/distributions/*.zip
 
   build-native:
-    name: 'Build with Graal on ${{ matrix.os }}'
+    name: 'Build with GraalVM on ${{ matrix.os }}'
     strategy:
       fail-fast: true
       matrix:
