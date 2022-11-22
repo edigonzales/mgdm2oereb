@@ -23,9 +23,11 @@ repositories {
     maven { url 'https://jars.interlis.ch/' }
 }
 
+/*
 configurations {
     jar.archiveName = myArtifactId+"-"+version+".jar"
 }
+*/
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
@@ -61,9 +63,11 @@ run {
 // verwende, muss ich nochmals über die Bücher und prüfen.
 
 // Das ist überflüssig? Weil es bereits in der lib gemacht wird?
+/*
 shadowJar {
    exclude 'venv/**'
 }
+*/
 
 graalvmNative {
     binaries {
@@ -162,10 +166,12 @@ jreleaser {
                 path = "../artifacts-native/mgdm2oereb-${version}-osx-x86-64.zip"
                 platform = 'osx'
             }
+            /*
             artifact {
                 path = "../artifacts-native/mgdm2oereb-${version}-windows-x86-64.zip"
                 platform = 'windows'
             }
+            */
         }
     }
 }

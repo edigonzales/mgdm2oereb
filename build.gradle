@@ -21,7 +21,6 @@ subprojects {
 
 group = 'io.github.sogis'
 
-/*
 nexusPublishing {
     repositories {
         sonatype { 
@@ -32,4 +31,3 @@ nexusPublishing {
         }
     }
 }
-*/

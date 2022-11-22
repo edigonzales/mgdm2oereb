@@ -35,7 +35,7 @@ jobs:
           sudo apt-get install libxml2-dev libxslt1-dev
 
       - name: Build lib with Gradle
-        run: ./gradlew clean lib:build 
+        run: ./gradlew clean lib:build -i
 
       - uses: actions/upload-artifact@v2
         if: ${{ failure() }}
@@ -79,7 +79,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ ubuntu-latest, macOS-latest, windows-latest ]
+        #os: [ ubuntu-22.04, macOS-latest, windows-latest ]
+        os: [ ubuntu-22.04, macOS-latest ]
     runs-on: ${{ matrix.os }}
 
     steps:
