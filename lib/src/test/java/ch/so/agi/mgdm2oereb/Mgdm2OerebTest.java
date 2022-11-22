@@ -44,7 +44,8 @@ class Mgdm2OerebTest {
         settings.setValue(Mgdm2Oereb.VALIDATE, Boolean.toString(true));
 
         Mgdm2Oereb mgdm2oereb = new Mgdm2Oereb();
-        mgdm2oereb.convert("src/test/data/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf", "/Users/stefan/tmp/mgdm2oereb/", settings);
+        //mgdm2oereb.convert("src/test/data/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf", "/Users/stefan/tmp/mgdm2oereb/", settings);
+        mgdm2oereb.convert("src/test/data/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf", tempDirectory.getAbsolutePath(), settings);
     }
     
 }
