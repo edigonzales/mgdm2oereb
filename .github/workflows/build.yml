@@ -134,6 +134,10 @@ jobs:
           ref: ${{ steps.head.outputs.content }}
           fetch-depth: 0
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get install libxml2-dev libxslt1-dev
+
       - name: 'Download all build artifacts'
         uses: actions/download-artifact@v2
 

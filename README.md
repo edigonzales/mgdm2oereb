@@ -81,5 +81,6 @@ MGDM (`--inputFile`): https://raw.githubusercontent.com/edigonzales/mgdm2oereb/m
 - Eigentlich muss man die config.json trennen (app und lib). Aber wenn man es eh immer machen muss, wenn man eine Anwendung macht, kann man es auch dort lassen? 
 - ~~!!Context pre-initialisieren!! -> nicht wirklich nötig, ist schnell im native-image (dünkt mich)~~. ~~Done. Gefühlt aber nicht noch schneller.~~
 ~~- Loglevel nicht via env var setzen im Python-Script.~~
+- Warum muss ich überhaupt GraalVM verwenden, um publizieren zu können. Was mach jreleaser genau? Soll doch nur deployen.
 - Tests
 
