@@ -55,7 +55,7 @@ Beispielaufruf mit ÖREBlex:
 MGDM (`--inputFile`): https://raw.githubusercontent.com/edigonzales/mgdm2oereb/main/lib/src/test/data/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf
 
 ```
-./mgdm2oereb --input=~/Downloads/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf --model=Planungszonen_V1_1 --themeCode=ch.Planungszonen --catalog=ch.sh.OeREBKRMkvs_supplement.xml --validate --oereblexHost oereblex.sh.ch --oereblexCanton sh --dummyOfficeName DUMMY_OFFICE_NAME --dummyOfficeUrl https://interlis.ch
+./mgdm2oereb --input ~/Downloads/ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf --model Planungszonen_V1_1 --themeCode ch.Planungszonen --catalog ch.sh.OeREBKRMkvs_supplement.xml --validate --oereblexHost oereblex.sh.ch --oereblexCanton sh --dummyOfficeName DUMMY_OFFICE_NAME --dummyOfficeUrl https://interlis.ch
 ```
 
 ## ~~Konfigurieren und starten~~
