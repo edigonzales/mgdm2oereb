@@ -47,7 +47,7 @@ Beispielaufruf ohne ÖREBlex:
 MGDM (`--inputFile`): https://raw.githubusercontent.com/edigonzales/mgdm2oereb/main/lib/src/test/data/ch.Planungszonen.sh.mgdm.v1_1.xtf
 
 ```
-./mgdm2oereb --input=~/Downloads/ch.Planungszonen.sh.mgdm.v1_1.xtf --model=Planungszonen_V1_1 --themeCode=ch.Planungszonen --catalog=ch.sh.OeREBKRMkvs_supplement.xml --validate
+./mgdm2oereb --input ~/Downloads/ch.Planungszonen.sh.mgdm.v1_1.xtf --model Planungszonen_V1_1 --themeCode ch.Planungszonen --catalog ch.sh.OeREBKRMkvs_supplement.xml --validate
 ```
 
 Beispielaufruf mit ÖREBlex:
