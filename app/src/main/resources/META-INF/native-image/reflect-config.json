@@ -1,5 +1,6 @@
 [
-{ "name": "ch.so.agi.mgdm2oereb.Settings", "allPublicMethods": true },
+  { "name": "ch.so.agi.mgdm2oereb.Settings", "allPublicMethods": true },
+  { "name": "ch.so.agi.mgdm2oereb.Mgdm2Oereb", "allPublicMethods": true, "allDeclaredFields":true, "allPublicFields": true},
 {
   "name":"[B"
 },
